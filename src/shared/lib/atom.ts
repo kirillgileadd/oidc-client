@@ -1,12 +1,12 @@
 export class Atom<T> {
   private value: T;
-  private listeners: Set<() => void> = new Set();
+  private listeners: Set<(value: T) => void> = new Set();
 
   constructor(value: T) {
     this.value = value;
   }
 
-  listen = (callback: () => void) => {
+  listen = (callback: (value: T) => void) => {
     this.listeners.add(callback);
     return () => {
       this.listeners.delete(callback);
@@ -19,6 +19,17 @@ export class Atom<T> {
 
   set = (value: T) => {
     this.value = value;
-    this.listeners.forEach((listener) => listener());
+    this.listeners.forEach((listener) => listener(value));
   };
+
+  derived<U>(mapFn: (value: T) => U): Atom<U> {
+    const derivedAtom = new Atom<U>(mapFn(this.value));
+
+    this.listen((newValue) => {
+      const mapped = mapFn(newValue);
+      derivedAtom.set(mapped);
+    });
+
+    return derivedAtom;
+  }
 }

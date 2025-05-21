@@ -8,13 +8,22 @@ import {
 import { oidcSessionStore } from "../oidc-client/oidc-session-store.ts";
 import { client } from "../../app/router.tsx";
 
+let refreshPromise: Promise<string | null> | null = null;
+
+const getRefreshToken = async () => {
+  if (!refreshPromise) {
+    refreshPromise = client.refreshTokens();
+  }
+  return refreshPromise;
+};
+
 export async function* authMiddleware<Request, Response>(
   call: ClientMiddlewareCall<Request, Response>,
   options: CallOptions,
 ) {
   let token = oidcSessionStore.getSessionToken();
   if (!token || oidcSessionStore.isSessionExpired()) {
-    token = await client.refreshTokens();
+    token = await getRefreshToken();
   }
 
   const metadata = Metadata(options.metadata).set(
@@ -30,21 +39,21 @@ export async function* authMiddleware<Request, Response>(
     return response;
   } catch (error) {
     //&& error.code === Status.UNAUTHENTICATED
-    if (error instanceof ClientError) {
-      const newToken = await client.refreshTokens();
-      if (newToken) {
-        const newMetadata = Metadata(options.metadata).set(
-          "Authorization",
-          `Bearer ${newToken}`,
-        );
-        const response = yield* call.next(call.request, {
-          ...options,
-          metadata: newMetadata,
-        });
-        return response;
-      }
-      oidcSessionStore.removeSession();
-    }
+    // if (error instanceof ClientError) {
+    //   const newToken = await client.refreshTokens();
+    //   if (newToken) {
+    //     const newMetadata = Metadata(options.metadata).set(
+    //       "Authorization",
+    //       `Bearer ${newToken}`,
+    //     );
+    //     const response = yield* call.next(call.request, {
+    //       ...options,
+    //       metadata: newMetadata,
+    //     });
+    //     return response;
+    //   }
+    //   oidcSessionStore.removeSession();
+    // }
 
     if (error instanceof ClientError) {
       throw error;

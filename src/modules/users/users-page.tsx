@@ -10,11 +10,11 @@ export const UsersPage: FC<UsersPageProps> = ({ className }) => {
   const usersQuery = useGetUsers();
 
   return (
-    <div className={clsx("", className)}>
-      <h1>User Page</h1>
+    <div className={clsx("p-2", className)}>
+      <h1 className="text-xl mb-3 font-bold">User Page</h1>
       {usersQuery.isLoading && <div>Loading...</div>}
       {usersQuery.data?.users.map((user) => (
-        <div>
+        <div key={user.id}>
           <p>{user.email}</p>
           <p>{user.createdAt ? new Date(user.createdAt).toString() : ""}</p>
         </div>

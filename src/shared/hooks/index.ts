@@ -1,2 +1,1 @@
-export { useSort } from "./use-sort";
-export type { SortItemT, SortValueT } from "./use-sort";
+export { createStrictContext, useStrictContext } from "./use-strict-context.ts";

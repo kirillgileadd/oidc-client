@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import type { FC } from "react";
 import { oidcSessionStore } from "../shared/oidc-client/oidc-session-store.ts";
+import { client } from "./router.tsx";
+import { Link } from "react-router";
 
 type HeaderProps = {
   className?: string;
@@ -16,15 +18,43 @@ export const Header: FC<HeaderProps> = ({ className }) => {
         className,
       )}
     >
-      My app
+      <nav>
+        <ul className="flex gap-x-2">
+          <li>
+            <Link
+              to={{
+                pathname: "/",
+              }}
+            >
+              My app
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={{
+                pathname: "/users",
+              }}
+            >
+              Users
+            </Link>
+          </li>
+        </ul>
+      </nav>
       <div>
         {session?.type === "logged-in" ? (
-          <div>
-            <div>{session.token.accessToken}</div>
-            <button>Logout</button>
+          <div className="flex gap-x-4">
+            <div>{session?.upn}</div>
+            <div>{session?.name}</div>
+            <button onClick={() => client.logout()}>Logout</button>
           </div>
         ) : (
-          <button>Login</button>
+          <Link
+            to={{
+              pathname: "/login",
+            }}
+          >
+            <button>Login</button>
+          </Link>
         )}
       </div>
     </header>

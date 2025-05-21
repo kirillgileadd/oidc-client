@@ -1,22 +1,19 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export const parseJwt = <T = {}>(
-  token: string
-):
-  | (T & {
-      exp: number;
-      iat: number;
-    })
-  | null => {
+export const decodeJWT = <T = never>(token: string): T | null => {
   try {
-    const payloadBase64 = token.split(".")[1];
-    const payloadJson = atob(
-      payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return null;
+
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
     );
-    return JSON.parse(payloadJson) as T & {
-      exp: number;
-      iat: number;
-    };
-  } catch {
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Invalid JWT:", error);
     return null;
   }
 };
