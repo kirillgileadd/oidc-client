@@ -169,7 +169,7 @@ export class OidcClient {
         state: undefined,
       });
       this.redirectHandler.performEndSessionRequest(this.config, requestEnd);
-      oidcSessionStore.setState({ type: "logged-out" });
+      oidcSessionStore.removeSession();
     }
   }
 }

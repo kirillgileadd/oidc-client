@@ -38,9 +38,9 @@ export async function* authMiddleware<Request, Response>(
     });
     return response;
   } catch (error) {
-    //&& error.code === Status.UNAUTHENTICATED
+    // && error.code === Status.UNAUTHENTICATED
     // if (error instanceof ClientError) {
-    //   const newToken = await client.refreshTokens();
+    //   const newToken = await getRefreshToken();
     //   if (newToken) {
     //     const newMetadata = Metadata(options.metadata).set(
     //       "Authorization",

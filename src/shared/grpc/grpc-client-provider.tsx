@@ -6,7 +6,7 @@ import { type GrpcClientsContextValue, grpcClientsContext } from "./context";
 import { errorMiddleware } from "./error-middleware.ts";
 import { authMiddleware } from "./auth-middleware.ts";
 
-const channel = createChannel("https://photo-meta.dev.api.deeplay.io");
+const channel = createChannel(import.meta.env.VITE_GRPC_URI);
 
 export const GrpcClientsProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo((): GrpcClientsContextValue => {
